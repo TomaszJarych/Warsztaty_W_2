@@ -14,9 +14,11 @@ import sun.security.pkcs11.Secmod.DbMode;
 import warsztat.DbUtil;
 
 public class User {
-	public static final String SELECT_FROM_USERS_WHERE_ID = "SELECT	*	FROM	warsztaty2.users	where	id=?";
+	private static final String DELETE_FROM_USERS_WHERE_ID = "DELETE FROM warsztaty2.users	WHERE	id=	?";
+	private static final String SELECT_FROM_USERS_WHERE_ID = "SELECT * FROM	warsztaty2.users	where	id=?";
 	private static final String ID_COLUMN_NAME = "ID";
 	private static final String INSERT_INTO_USERS = "INSERT	INTO warsztaty2.users (username,	email,	password)	VALUES	(?,	?,	?)";
+	private static final String UPDATE_USERS = "UPDATE warsztaty2.Users SET username=?, email=?, password=? where id = ?";
 
 	private long id;
 	private String userName;
@@ -28,6 +30,18 @@ public class User {
 		this.userName = userName;
 		this.email = email;
 		setPassword(password);
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setUserGroupId(int userGroupId) {
+		this.userGroupId = userGroupId;
 	}
 
 	public long getId() {
@@ -57,8 +71,7 @@ public class User {
 	public void saveToDB(Connection conn) throws SQLException {
 		if (this.id == 0) {
 			String generatedColumns[] = { ID_COLUMN_NAME };
-			PreparedStatement preparedStatement;
-			preparedStatement = conn.prepareStatement(INSERT_INTO_USERS, generatedColumns);
+			PreparedStatement preparedStatement = conn.prepareStatement(INSERT_INTO_USERS, generatedColumns);
 			preparedStatement.setString(1, this.userName);
 			preparedStatement.setString(2, this.email);
 			preparedStatement.setString(3, this.password);
@@ -67,6 +80,40 @@ public class User {
 			if (rs.next()) {
 				this.id = rs.getInt(1);
 			}
+		}
+	}
+
+	public void save(Connection conn) throws SQLException {
+		if (this.id == 0) {
+			String generatedColumns[] = { ID_COLUMN_NAME };
+			PreparedStatement preparedStatement = conn.prepareStatement(INSERT_INTO_USERS, generatedColumns);
+			preparedStatement.setString(1, this.userName);
+			preparedStatement.setString(2, this.email);
+			preparedStatement.setString(3, this.password);
+			preparedStatement.executeQuery();
+			ResultSet rs = preparedStatement.getGeneratedKeys();
+			if (rs.next()) {
+				this.id = rs.getLong(1);
+
+			}
+		} else {
+			PreparedStatement preparedStatement = conn.prepareStatement(UPDATE_USERS);
+			preparedStatement.setString(1, this.userName);
+			preparedStatement.setString(2, this.email);
+			preparedStatement.setString(3, this.password);
+			preparedStatement.setLong(4, this.id);
+			preparedStatement.executeUpdate();
+
+		}
+
+	}
+
+	public void delete(Connection conn) throws SQLException {
+		if (this.id != 0) {
+			PreparedStatement preparedStatement = conn.prepareStatement(DELETE_FROM_USERS_WHERE_ID);
+			preparedStatement.setLong(1, this.id);
+			preparedStatement.executeUpdate();
+			this.id = 0;
 		}
 	}
 
@@ -102,30 +149,5 @@ public class User {
 		uArray = users.toArray(uArray);
 		return uArray;
 	}
-}
-	if	(this.id	==	0)	{
-		
-}	else	{
-		String	sql	=	"UPDATE	Users	SET	username=?,	email=?,	password=?	where	id	=	?";
-		PreparedStatement	preparedStatement;
-		preparedStatement	=	conn.prepareStatement(sql);
-		preparedStatement.setString(1,	this.username);
-		preparedStatement.setString(2,	this.email);
-		preparedStatement.setString(3,	this.password);
-		preparedStatement.setInt(4,	this.id);
-		preparedStatement.executeUpdate();
-}
 
-
-	public static void main(String[] args) throws SQLException {
-
-		try (Connection conn = DbUtil.createConnection()) {
-			User user1 = new User("Jan Kowalski", "kowal1@gmail.com", "Wrocław");
-			// user1.saveToDB(conn);
-			User user2 = loadUserById(conn, 1);
-			System.out.println(
-					user2.getId() + " " + user2.getUserName() + " " + user2.getEmail() + " " + user2.getPassword());
-
-		}
-	}
 }
