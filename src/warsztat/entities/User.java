@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import warsztat.DbUtil;
+
 public class User {
 	private static final String DELETE_FROM_USERS_WHERE_ID = "DELETE FROM warsztaty2.users	WHERE	id=	?";
 	private static final String SELECT_FROM_USERS_WHERE_ID = "SELECT * FROM	warsztaty2.users	where	id=?";
@@ -150,4 +152,13 @@ public class User {
 		return uArray;
 	}
 
+	public static void main(String[] args) {
+		try (Connection conn = DbUtil.createConnection()){
+			
+			User user3 = new User("Dominik", "Marcinkiewicz", "innehasłoNowe");
+			user3.saveToDB(conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
