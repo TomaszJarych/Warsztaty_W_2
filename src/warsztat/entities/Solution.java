@@ -15,21 +15,23 @@ public class Solution {
 	private LocalDateTime created;
 	private LocalDateTime updated;
 	private String description;
-	private long exercise_id;
-	private long users_id;
+	private long exerciseId;
+	private long usersId;
 
 	private static final String ID_COLUMN_NAME = "id";
 	private static final String INSERT_INTO_SOLUTION = "INSERT INTO warsztaty2.solutions(created, updated, description, exercise_id, users_id)VALUES (?,?,?,?,?);";
 	private static final String LOAD_SOLUTION_BY_ID = "SELECT * FROM warsztaty2.solutions where id =?";
 	private static final String LOAD_ALL_SOLUTIONS = "SELECT * FROM warsztaty2.solutions;";
+	private static final String LOAD_ALL_SOLUTIONS_FROM_USER = "SELECT * FROM warsztaty2.solutions inner join warsztaty2.users on warsztaty2.solutions.users_id = warsztaty2.users.id WHERE warsztaty2.users.id=? ;";
+	private static final String LOADALL_BY_EXERCISE_ID = "SELECT * FROM warsztaty2.solutions where warsztaty2.solutions.exercise_id =? order by warsztaty2.solutions.updated asc;";
 	private static final String UPDATE_SOLUTION = "UPDATE warsztaty2.solutions SET updated = ?, description =?  WHERE id =? ;";
 	private static final String DELETE_SOLUTION = "DELETE FROM `warsztaty2`.`solutions` WHERE warsztaty2.solutions.id =?;";
 
-	public Solution(String description, long exercise_id, long users_id) {
+	public Solution(String description, long exerciseId, long usersId) {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		this.description = description;
-		this.exercise_id = exercise_id;
-		this.users_id = users_id;
+		this.exerciseId = exerciseId;
+		this.usersId = usersId;
 		this.created = localDateTime;
 		this.updated = localDateTime;
 	}
@@ -51,11 +53,11 @@ public class Solution {
 	}
 
 	public long getExercise_id() {
-		return exercise_id;
+		return exerciseId;
 	}
 
 	public long getUsers_id() {
-		return users_id;
+		return usersId;
 	}
 
 	public void setDescription(String description) {
@@ -65,7 +67,7 @@ public class Solution {
 	@Override
 	public String toString() {
 		return "Solution [id=" + id + ", created=" + created + ", updated=" + updated + ", description=" + description
-				+ ", exercise_id=" + exercise_id + ", users_id=" + users_id + "]";
+				+ ", exercise_id=" + exerciseId + ", users_id=" + usersId + "]";
 	}
 
 	public void saveToDB(Connection conn) throws SQLException {
@@ -76,8 +78,8 @@ public class Solution {
 			preparedStatement.setTimestamp(1, timestamp);
 			preparedStatement.setTimestamp(2, timestamp);
 			preparedStatement.setString(3, this.description);
-			preparedStatement.setLong(4, this.exercise_id);
-			preparedStatement.setLong(5, this.users_id);
+			preparedStatement.setLong(4, this.exerciseId);
+			preparedStatement.setLong(5, this.usersId);
 			preparedStatement.executeUpdate();
 			ResultSet resultSet = preparedStatement.getGeneratedKeys();
 			if (resultSet.next()) {
@@ -134,6 +136,42 @@ public class Solution {
 			preparedStatement.execute();
 			this.id = 0;
 
+		}
+	}
+
+	public static Solution[] loadAllByUserId(Connection conn, User user) throws SQLException {
+		ArrayList<Solution> solutions = new ArrayList<Solution>();
+		PreparedStatement preparedStatement = conn.prepareStatement(LOAD_ALL_SOLUTIONS_FROM_USER);
+		preparedStatement.setLong(1, user.getId());
+		ResultSet resultSet = preparedStatement.executeQuery();
+		while (resultSet.next()) {
+			solutions.add(createSolution(resultSet));
+		}
+		Solution[] solutionsArray = new Solution[solutions.size()];
+		solutionsArray = solutions.toArray(solutionsArray);
+		return solutionsArray;
+	}
+	public static Solution[] loadAllByExerciseId (Connection conn, long exerciseId ) throws SQLException {
+		ArrayList<Solution> solutions = new ArrayList<Solution>();
+		PreparedStatement preparedStatement = conn.prepareStatement(LOADALL_BY_EXERCISE_ID);
+		preparedStatement.setLong(1, exerciseId);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		while (resultSet.next()) {
+			solutions.add(createSolution(resultSet));
+		}
+		Solution[] solutionsArray = new Solution[solutions.size()];
+		solutionsArray = solutions.toArray(solutionsArray);
+		return solutionsArray;
+
+	}
+	public static void main(String[] args) {
+		try (Connection conn = DbUtil.createConnection()) {
+			Solution[] solutions = loadAllByExerciseId(conn, 2);	
+			for (Solution solution : solutions) {
+				System.out.println(solution.toString());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
