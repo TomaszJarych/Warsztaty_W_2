@@ -8,11 +8,6 @@ import java.util.ArrayList;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import com.sun.org.apache.bcel.internal.generic.Select;
-
-import sun.security.pkcs11.Secmod.DbMode;
-import warsztat.DbUtil;
-
 public class User {
 	private static final String DELETE_FROM_USERS_WHERE_ID = "DELETE FROM warsztaty2.users	WHERE	id=	?";
 	private static final String SELECT_FROM_USERS_WHERE_ID = "SELECT * FROM	warsztaty2.users	where	id=?";
@@ -66,6 +61,11 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", userName=" + userName + ", email=" + email + ", password=" + password + "]";
 	}
 
 	public void saveToDB(Connection conn) throws SQLException {
@@ -139,7 +139,7 @@ public class User {
 
 	static public User[] loadAllUsers(Connection conn) throws SQLException {
 		ArrayList<User> users = new ArrayList<User>();
-		String sql = "SELECT	*	FROM	Users";
+		String sql = "SELECT * FROM warsztaty2.users";
 		PreparedStatement preparedStatement = conn.prepareStatement(sql);
 		ResultSet resultSet = preparedStatement.executeQuery();
 		while (resultSet.next()) {
