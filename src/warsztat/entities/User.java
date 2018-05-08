@@ -15,8 +15,8 @@ public class User {
 	private static final String SELECT_FROM_USERS_WHERE_ID = "SELECT * FROM	warsztaty2.users	where	id=?";
 	private static final String ID_COLUMN_NAME = "ID";
 	private static final String LOAD_ALL_BY_GRUP_ID = "SELECT * FROM warsztaty2.users where warsztaty2.users.user_group_id = ?;";
-	private static final String INSERT_INTO_USERS = "INSERT	INTO warsztaty2.users (username,	email,	password)	VALUES	(?,	?,	?)";
-	private static final String UPDATE_USERS = "UPDATE warsztaty2.Users SET username=?, email=?, password=? where id = ?";
+	private static final String INSERT_INTO_USERS = "INSERT	INTO warsztaty2.users (username,	email,	password, user_group_id)	VALUES	(?,	?,	?,?)";
+	private static final String UPDATE_USERS = "UPDATE warsztaty2.users SET username=?, email=?, password=?, user_group_id = ? where id = ?";
 
 	private long id;
 	private String userName;
@@ -24,10 +24,11 @@ public class User {
 	private String password;
 	private long userGroupId;
 
-	public User(String userName, String email, String password) {
+	public User(String userName, String email, String password, long userGroupId) {
 		this.userName = userName;
 		this.email = email;
 		setPassword(password);
+		this.userGroupId = userGroupId;
 	}
 
 	public void setUserName(String userName) {
@@ -38,7 +39,7 @@ public class User {
 		this.email = email;
 	}
 
-	public void setUserGroupId(int userGroupId) {
+	public void setUserGroupId(long userGroupId) {
 		this.userGroupId = userGroupId;
 	}
 
@@ -66,9 +67,11 @@ public class User {
 		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
+	
+
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", email=" + email + ", password=" + password + "]";
+		return "User [id=" + id + ", userName=" + userName + ", email=" + email + ", userGroupId=" + userGroupId + "]";
 	}
 
 	public void saveToDB(Connection conn) throws SQLException {
@@ -78,6 +81,7 @@ public class User {
 			preparedStatement.setString(1, this.userName);
 			preparedStatement.setString(2, this.email);
 			preparedStatement.setString(3, this.password);
+			preparedStatement.setLong(4, this.userGroupId);
 			preparedStatement.executeUpdate();
 			ResultSet rs = preparedStatement.getGeneratedKeys();
 			if (rs.next()) {
@@ -93,6 +97,7 @@ public class User {
 			preparedStatement.setString(1, this.userName);
 			preparedStatement.setString(2, this.email);
 			preparedStatement.setString(3, this.password);
+			preparedStatement.setLong(4, this.userGroupId);
 			preparedStatement.executeQuery();
 			ResultSet rs = preparedStatement.getGeneratedKeys();
 			if (rs.next()) {
@@ -104,7 +109,8 @@ public class User {
 			preparedStatement.setString(1, this.userName);
 			preparedStatement.setString(2, this.email);
 			preparedStatement.setString(3, this.password);
-			preparedStatement.setLong(4, this.id);
+			preparedStatement.setLong(4, this.userGroupId);
+			preparedStatement.setLong(5, this.id);
 			preparedStatement.executeUpdate();
 
 		}
@@ -135,7 +141,8 @@ public class User {
 		String username = resultSet.getString("username");
 		String password = resultSet.getString("password");
 		String email = resultSet.getString("email");
-		User loadedUser = new User(username, email, password);
+		long userGroupId = resultSet.getLong("user_group_id");
+		User loadedUser = new User(username, email, password, userGroupId);
 		loadedUser.id = resultSet.getLong(ID_COLUMN_NAME);
 		return loadedUser;
 	}
