@@ -164,14 +164,5 @@ public class Solution {
 		return solutionsArray;
 
 	}
-	public static void main(String[] args) {
-		try (Connection conn = DbUtil.createConnection()) {
-			Solution[] solutions = loadAllByExerciseId(conn, 2);	
-			for (Solution solution : solutions) {
-				System.out.println(solution.toString());
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+	
 }

@@ -1,4 +1,4 @@
-package app.warsztaty;
+package controlApp.warsztaty;
 
 import java.sql.Connection;
 import java.sql.SQLException;
