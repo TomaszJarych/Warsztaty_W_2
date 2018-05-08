@@ -19,7 +19,7 @@ public class Solution {
 	private long usersId;
 
 	private static final String ID_COLUMN_NAME = "id";
-	private static final String INSERT_INTO_SOLUTION = "INSERT INTO warsztaty2.solutions(created, updated, description, exercise_id, users_id)VALUES (?,?,?,?,?);";
+	private static final String INSERT_INTO_SOLUTION = "INSERT INTO warsztaty2.solutions(created, description, exercise_id, users_id)VALUES (?,?,?,?);";
 	private static final String LOAD_SOLUTION_BY_ID = "SELECT * FROM warsztaty2.solutions where id =?";
 	private static final String LOAD_ALL_SOLUTIONS = "SELECT * FROM warsztaty2.solutions;";
 	private static final String LOAD_ALL_SOLUTIONS_FROM_USER = "SELECT * FROM warsztaty2.solutions inner join warsztaty2.users on warsztaty2.solutions.users_id = warsztaty2.users.id WHERE warsztaty2.users.id=? ;";
@@ -33,7 +33,6 @@ public class Solution {
 		this.exerciseId = exerciseId;
 		this.usersId = usersId;
 		this.created = localDateTime;
-		this.updated = localDateTime;
 	}
 
 	public long getId() {
@@ -76,10 +75,9 @@ public class Solution {
 			PreparedStatement preparedStatement = conn.prepareStatement(INSERT_INTO_SOLUTION, generatedColumns);
 			Timestamp timestamp = Timestamp.valueOf(this.created);
 			preparedStatement.setTimestamp(1, timestamp);
-			preparedStatement.setTimestamp(2, timestamp);
-			preparedStatement.setString(3, this.description);
-			preparedStatement.setLong(4, this.exerciseId);
-			preparedStatement.setLong(5, this.usersId);
+			preparedStatement.setString(2, this.description);
+			preparedStatement.setLong(3, this.exerciseId);
+			preparedStatement.setLong(4, this.usersId);
 			preparedStatement.executeUpdate();
 			ResultSet resultSet = preparedStatement.getGeneratedKeys();
 			if (resultSet.next()) {
