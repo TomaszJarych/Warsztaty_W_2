@@ -14,14 +14,14 @@ public class ExerciseControlApp {
 		try (Connection conn = DbUtil.createConnection(); Scanner scan = new Scanner(System.in)) {
 			String operations = "";
 			do {
-				Exercise [] allExercises = Exercise.allExercises(conn);
+				Exercise[] allExercises = Exercise.allExercises(conn);
 				for (Exercise exercise : allExercises) {
 					System.out.println(exercise.toString());
 				}
 				System.out.println("");
-				System.out.println("Wybierz operację. Wpisz  :"+"\n");
-				System.out.println("add - dodanie nowego zadania "+"\n"+"edit - edycja zadania"+"\n"+""
-						+ "delete - usunięcie zadania"+"\n"+"quit - zakończenie programu");
+				System.out.println("Wybierz operację. Wpisz  :" + "\n");
+				System.out.println("add - dodanie nowego zadania " + "\n" + "edit - edycja zadania" + "\n" + ""
+						+ "delete - usunięcie zadania" + "\n" + "quit - zakończenie programu");
 				operations = getString(scan);
 				switch (operations) {
 				case "add":
@@ -78,11 +78,12 @@ public class ExerciseControlApp {
 		}
 		return text;
 	}
+
 	public static long getID(Scanner scan) throws InputMismatchException {
 		while (!scan.hasNextLong()) {
 			System.out.println("Podaj prawidłowy numer");
 			scan.nextLong();
 		}
 		return scan.nextLong();
-}
+	}
 }
