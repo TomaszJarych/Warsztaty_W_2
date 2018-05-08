@@ -19,7 +19,7 @@ public class UserControlApp {
 				}
 				System.out.println("");
 				System.out.println("Wybierz operację. Wpisz  :"+"\n");
-				System.out.println("add - dodanie nowego użutkownika "+"\n"+"edit - edycja użytkownika"+"\n"+""
+				System.out.println("add - dodanie nowego użytkownika "+"\n"+"edit - edycja użytkownika"+"\n"+""
 						+ "delete - usunięcie użytownika"+"\n"+"quit - zakończenie programu");
 				operations = getString(scan);
 				switch (operations) {
